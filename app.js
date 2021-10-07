@@ -19,8 +19,8 @@ for(let i = 0; i < 8; i++){
 }
 
 for(let i = 0; i < 8 ; i++){
-    squares[1][i].classList.add("black", "pawn");
-    squares[6][i].classList.add("white", "pawn");
+    squares[1][i].classList.add("black", "pawn", "first");
+    squares[6][i].classList.add("white", "pawn", "first");
 }
 
 squares[0][0].classList.add("black", "rook");
@@ -50,26 +50,7 @@ main.addEventListener('click', function(event){
 function clicked(square){
     if(!square.classList.contains("white") && !square.classList.contains("black")){
         if(square.classList.contains("clicked")){
-            if(previouslySelected.classList.contains("pawn")){
-                if(previouslySelected.classList.contains("white")){
-                    square.classList.add("white", "pawn");
-                    previouslySelected.classList.remove("white", "pawn");
-                }else{
-                    square.classList.add("black", "pawn");
-                    previouslySelected.classList.remove("black", "pawn");
-                }
-            }else{
-                if(previouslySelected.classList.contains("knight")){
-                    if(previouslySelected.classList.contains("white")){
-                        square.classList.add("white", "knight");
-                        previouslySelected.classList.remove("white", "knight");
-                    }else{
-                        square.classList.add("black", "knight");
-                        previouslySelected.classList.remove("black", "knight");
-                    }
-                }
-
-            } 
+            movePiece(square);
         }
         clearSelection();
     }else{
@@ -98,20 +79,147 @@ function clearSelection(){
 function highlightPossibleMoves(square){
     let squareClasses = square.classList;
     if(squareClasses.contains("pawn")){
-        if(squareClasses.contains("white")){
-            document.getElementById((square.id-8)).classList.add("clicked");
-            document.getElementById((square.id-16)).classList.add("clicked");
-        }else{
-            document.getElementById((parseInt(square.id)+8)).classList.add("clicked");
-            document.getElementById((parseInt(square.id)+16)).classList.add("clicked");
-        }
+        pawnMoves(square, squareClasses);
     }else if(squareClasses.contains("knight")){
-        if(squareClasses.contains("white")){
-            document.getElementById((square.id-17)).classList.add("clicked");
-            document.getElementById((square.id-15)).classList.add("clicked");
-        }else{
-            document.getElementById((parseInt(square.id)+17)).classList.add("clicked");
-            document.getElementById((parseInt(square.id)+15)).classList.add("clicked");   
-        } 
+        knightMoves(square);
+    }else if(squareClasses.contains("bishop")){
+        bishopMoves(square);
     }
 }
+
+function pawnMoves(square, squareClasses){
+    let newPos;
+    if(squareClasses.contains("white")){
+        newPos = square.id-8;
+        if(!document.getElementById(newPos).classList.contains("white") && !document.getElementById(newPos).classList.contains("black")){
+            document.getElementById(newPos).classList.add("clicked");
+            if(!document.getElementById((square.id-16)).classList.contains("black") &&
+             !document.getElementById((square.id-16)).classList.contains("white") &&
+             squareClasses.contains("first")){
+                document.getElementById((square.id-16)).classList.add("clicked");
+            }
+        }
+    }else{
+        newPos = parseInt(square.id)+8;
+        if(!document.getElementById(newPos).classList.contains("white") && !document.getElementById(newPos).classList.contains("black")){
+            document.getElementById(newPos).classList.add("clicked");
+            if(!document.getElementById(parseInt(square.id)+16).classList.contains("black") &&
+             !document.getElementById(parseInt(square.id)+16).classList.contains("white") &&
+             squareClasses.contains("first")){
+                document.getElementById(parseInt(square.id)+16).classList.add("clicked");
+            }
+        }
+    }
+}
+
+
+function knightMoves(square){
+    const knightJumps = [-17, -15, -10, -6, 6, 10, 15, 17];
+    knightJumps.forEach(function(jump){
+        let newPos = parseInt(square.id) + jump;
+        if(newPos >= 0 &&newPos <= 63 && Math.abs((newPos % 8) - (square.id % 8)) <= 2){
+            if(!document.getElementById(newPos).classList.contains("white")){
+                document.getElementById(newPos).classList.add("clicked");
+            }
+        }
+    });
+}
+
+function bishopMoves(square){
+    let index = parseInt(square.id);
+    let row = Math.floor(square.id / 8);
+    let column = square.id % 8;
+    let startLeft = Math.min(row, column);  //-1
+    let endRight  = Math.min(7-row, 7-column);
+    let startRight = Math.min(row, 7-column); //-1
+    let endLeft = Math.min(7-row, column);
+    let newPos = 0;
+  
+
+    for(let i = 1; i <= startLeft; i++){
+        newPos = index - (i * 9);
+        if((document.getElementById(newPos).classList.contains("white") && square.classList.contains("white")) || (document.getElementById(newPos).classList.contains("black") && square.classList.contains("black"))){
+            break;
+        }else if(document.getElementById(newPos).classList.contains("black") ||document.getElementById(newPos).classList.contains("white")){
+            document.getElementById(newPos).classList.add("clicked");
+            break;
+        }else{
+            document.getElementById(newPos).classList.add("clicked");
+        }
+    }
+
+    for(let i = 1; i <= endRight; i++){
+        newPos = index + (i * 9);
+        if((document.getElementById(newPos).classList.contains("white") && square.classList.contains("white")) || (document.getElementById(newPos).classList.contains("black") && square.classList.contains("black"))){
+            break;
+        }else if(document.getElementById(newPos).classList.contains("black") ||document.getElementById(newPos).classList.contains("white")){
+            document.getElementById(newPos).classList.add("clicked");
+            break;
+        }else{
+            document.getElementById(newPos).classList.add("clicked");
+        }
+    }
+
+    for(let i = 1; i <= startRight; i++){
+        newPos = index - (i * 7);
+        if((document.getElementById(newPos).classList.contains("white") && square.classList.contains("white")) || (document.getElementById(newPos).classList.contains("black") && square.classList.contains("black"))){
+            break;
+        }else if(document.getElementById(newPos).classList.contains("black") ||document.getElementById(newPos).classList.contains("white")){
+            document.getElementById(newPos).classList.add("clicked");
+            break;
+        }else{
+            document.getElementById(newPos).classList.add("clicked");
+        }
+    }
+
+
+    for(let i = 1; i <= endLeft; i++){
+        newPos = index + (i * 7);
+        if((document.getElementById(newPos).classList.contains("white") && square.classList.contains("white")) || (document.getElementById(newPos).classList.contains("black") && square.classList.contains("black"))){
+            break;
+        }else if(document.getElementById(newPos).classList.contains("black") ||document.getElementById(newPos).classList.contains("white")){
+            document.getElementById(newPos).classList.add("clicked");
+            break;
+        }else{
+            document.getElementById(newPos).classList.add("clicked");
+        }
+    }
+
+}
+
+
+
+
+function movePiece(square){
+    if(previouslySelected.classList.contains("pawn")){
+        if(previouslySelected.classList.contains("white")){
+            square.classList.add("white", "pawn");
+            previouslySelected.classList.remove("white", "pawn");
+            if(previouslySelected.classList.contains("first")){
+                previouslySelected.classList.remove("first");
+            }
+        }else{
+            square.classList.add("black", "pawn");
+            previouslySelected.classList.remove("black", "pawn");
+            if(previouslySelected.classList.contains("first")){
+                previouslySelected.classList.remove("first");
+            }
+        }
+    }else if(previouslySelected.classList.contains("knight")){
+            if(previouslySelected.classList.contains("white")){
+                square.classList.add("white", "knight");
+                previouslySelected.classList.remove("white", "knight");
+            }else{
+                square.classList.add("black", "knight");
+                previouslySelected.classList.remove("black", "knight");
+            }
+    }else if(previouslySelected.classList.contains("bishop")){
+        if(previouslySelected.classList.contains("white")){
+            square.classList.add("white", "bishop");
+            previouslySelected.classList.remove("white", "bishop");
+        }else{
+            square.classList.add("black", "bishop");
+            previouslySelected.classList.remove("black", "bishop");
+        }
+    }
+} 
