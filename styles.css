@@ -79,6 +79,10 @@ div.white.king{
     background-image: url(assets/white_king.png);
 }
 
+div.highlighted{
+    background-color: rgb(120, 200, 207);
+}
+
 div.clicked{
-    background-color: rgb(159, 232, 235);
+    background-color: rgb(0, 200, 207);
 }
