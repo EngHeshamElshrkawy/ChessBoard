@@ -23,29 +23,83 @@ for (let i = 0; i < 8; i++) {
     squares.push(rows);
 }
 
-for (let i = 0; i < 8; i++) {
-    squares[1][i].classList.add("black", "pawn", "first");
-    squares[6][i].classList.add("white", "pawn", "first");
+let FEN = prompt("Start from a certain FEN?", "enter FEN here");
+
+if(FEN == null || FEN == ""){
+    populateBoard();
+}else{
+    populateWithFEN(FEN);
 }
 
-squares[0][0].classList.add("black", "rook", "first");
-squares[0][7].classList.add("black", "rook", "first");
-squares[0][1].classList.add("black", "knight");
-squares[0][6].classList.add("black", "knight");
-squares[0][2].classList.add("black", "bishop");
-squares[0][5].classList.add("black", "bishop");
-squares[0][3].classList.add("black", "queen");
-squares[0][4].classList.add("black", "king", "first");
+function populateWithFEN(fen){
+    const FEN_ARRAY = fen.split(" ")[0].split("/");
+    let currentSquare = 0;
+    FEN_ARRAY.forEach(function(row, index){
+        for (let i = 0; i < row.length; i++) {
+            if(!isNaN(parseInt(row[i]))){
+                currentSquare += parseInt(row[i]);
+            }else{
+                if(row[i] === "p"){
+                    document.getElementById(currentSquare).classList.add("black", "pawn");
+                }else if(row[i] === "P"){
+                    document.getElementById(currentSquare).classList.add("white", "pawn");
+                }else if(row[i] === "n"){
+                    document.getElementById(currentSquare).classList.add("black", "knight");
+                }else if(row[i] === "N"){
+                    document.getElementById(currentSquare).classList.add("white", "knight");
+                }else if(row[i] === "b"){
+                    document.getElementById(currentSquare).classList.add("black", "bishop");
+                }else if(row[i] === "B"){
+                    document.getElementById(currentSquare).classList.add("white", "bishop");
+                }else if(row[i] === "r"){
+                    document.getElementById(currentSquare).classList.add("black", "rook");
+                }else if(row[i] === "R"){
+                    document.getElementById(currentSquare).classList.add("white", "rook");
+                }else if(row[i] === "q"){
+                    document.getElementById(currentSquare).classList.add("black", "queen");
+                }else if(row[i] === "Q"){
+                    document.getElementById(currentSquare).classList.add("white", "queen");
+                }else if(row[i] === "k"){
+                    document.getElementById(currentSquare).classList.add("black", "king");
+                }else if(row[i] === "K"){
+                    document.getElementById(currentSquare).classList.add("white", "king");
+                }else{
+                    console.log("SHOULD NOT BE REACHED");
+                }
+                currentSquare ++;
+            }
+        }
+    
+    });
+}
 
 
-squares[7][0].classList.add("white", "rook", "first");
-squares[7][7].classList.add("white", "rook", "first");
-squares[7][1].classList.add("white", "knight");
-squares[7][6].classList.add("white", "knight");
-squares[7][2].classList.add("white", "bishop");
-squares[7][5].classList.add("white", "bishop");
-squares[7][3].classList.add("white", "queen");
-squares[7][4].classList.add("white", "king", "first");
+function populateBoard(){
+    for (let i = 0; i < 8; i++) {
+        squares[1][i].classList.add("black", "pawn", "first");
+        squares[6][i].classList.add("white", "pawn", "first");
+    }
+    
+    squares[0][0].classList.add("black", "rook", "first");
+    squares[0][7].classList.add("black", "rook", "first");
+    squares[0][1].classList.add("black", "knight");
+    squares[0][6].classList.add("black", "knight");
+    squares[0][2].classList.add("black", "bishop");
+    squares[0][5].classList.add("black", "bishop");
+    squares[0][3].classList.add("black", "queen");
+    squares[0][4].classList.add("black", "king", "first");
+    
+    
+    squares[7][0].classList.add("white", "rook", "first");
+    squares[7][7].classList.add("white", "rook", "first");
+    squares[7][1].classList.add("white", "knight");
+    squares[7][6].classList.add("white", "knight");
+    squares[7][2].classList.add("white", "bishop");
+    squares[7][5].classList.add("white", "bishop");
+    squares[7][3].classList.add("white", "queen");
+    squares[7][4].classList.add("white", "king", "first");
+    
+}
 
 main.addEventListener('click', function (event) {
     clicked(event.target);
